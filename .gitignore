@@ -1,0 +1,11 @@
+# Ignore eclipse files
+.classpath
+.settings/
+.project
+
+# Ignore gradle files
+build/
+.gradle/
+
+# Ignore the directory that we configured eclipse to build to
+eclipse-build/

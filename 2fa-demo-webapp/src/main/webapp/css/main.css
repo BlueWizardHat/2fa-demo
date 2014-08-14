@@ -1,0 +1,48 @@
+.header {
+	height: 40px;
+	width: 100%;
+	background-color: #f8f8f8;
+	color: #000000;
+	top: 0px;
+	left: 0px;
+	position: fixed;
+	border-bottom: 1px solid #dddddd;
+}
+
+.header .container {
+	padding-top: 10px;
+}
+
+.muted {
+	color: #666666;
+	text-shadow: 0px 1px 0px #FFF;
+}
+
+.header .brand {
+	font-size: 20px;
+	font-weight: 200;
+}
+
+.clear-header {
+	height: 50px;
+	clear: both;
+}
+
+.footer {
+	width: 100%;
+	background-color: #f8f8f8;
+	color: #000000;
+	bottom: 0px;
+	left: 0px;
+	position: fixed;
+	border-top: 1px solid #dddddd;
+}
+
+.footer .container {
+	padding-top: 10px;
+}
+
+.clear-footer, .footer {
+	height: 40px;
+	clear: both;
+}

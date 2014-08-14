@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Two-Factor Authentication Demo / by BlueWizardHat</title>
+
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+
+	<link rel="stylesheet" href="css/main.css">
+	<script src="js/main.js"></script>
+</head>
+
+<body>
+
+	<!-- Header -->
+	<div class="header">
+		<div class="container container-narrow">
+			<p class="pull-right muted">
+				<span data-bind="if: !userInfo.loggedIn()">Not logged in</span>
+				<span data-bind="if: userInfo.loggedIn()">
+					Logged in as <b><span data-bind="text: userInfo.displayName()"></span></b> | 
+					<a data-bind="click: function () { logout(); }">Log out</a>
+				</span>
+			</p>
+		</div>
+	</div>
+	<!-- /Header -->
+
+	<!-- Page content -->
+	<div class="container container-narrow">
+		<div id="page-content">
+			<div class="clear-header"></div>
+			<h1>Two-Factor Authentication demo</h1>
+
+			<!-- Errorbox -->
+			<div data-bind="if: errorState()">
+				<div class="alert alert-danger alert-dismissible" role="alert" data-bind="text: errorMsg()"></div>
+			</div>
+			<!-- /Errorbox -->
+
+			<!-- Login/create functionality -->
+			<div data-bind="if: pageFlow() === 'login'">
+				<div class="clear-header"></div>
+				<h4 data-bind="text: loginPage.creatingUser() ? 'Create new user' : 'Sign in'"></h4>
+				<div class="clear-header"></div>
+
+				<form class="form-horizontal" role="form" onsubmit="return false;">
+					<div class="form-group" id="userName-group" data-bind="css: { 'has-error': !loginPage.userNameValidates() }">
+						<label for="userName" class="col-sm-2 control-label">User name</label>
+						<div class="col-sm-5">
+							<input type="text" class="form-control" id="userName" placeholder="User name" data-bind="value: loginPage.userName, disable: loginPage.twofactorRequired()">
+						</div>
+					</div>
+					<div data-bind="if: loginPage.creatingUser()">
+						<div class="form-group" id="displayName-group" data-bind="css: { 'has-error': !loginPage.displayNameValidates() }">
+							<label for="displayName" class="col-sm-2 control-label">Display name</label>
+							<div class="col-sm-5">
+								<input type="text" class="form-control" id="displayName" placeholder="Name to display while logged in" data-bind="value: loginPage.displayName">
+							</div>
+						</div>
+					</div>
+					<div class="form-group" id="password-group" data-bind="css: { 'has-error': !loginPage.passwordValidates() }">
+						<label for="password" class="col-sm-2 control-label">Password</label>
+						<div class="col-sm-5">
+							<input type="password" class="form-control" id="password" placeholder="Password" data-bind="value: loginPage.password, disable: loginPage.twofactorRequired()">
+						</div>
+					</div>
+					<div data-bind="if: loginPage.creatingUser()">
+						<div class="form-group" id="password2-group" data-bind="css: { 'has-error': !loginPage.password2Validates() }">
+							<label for="password2" class="col-sm-2 control-label">Repeat Password</label>
+							<div class="col-sm-5">
+								<input type="password" class="form-control" id="password2" placeholder="Repeat password" data-bind="value: loginPage.password2">
+							</div>
+						</div>
+					</div>
+					<div data-bind="if: !(!loginPage.twofactorRequired() || loginPage.twofactorBoth())">
+						<div class="form-group" id="twofactorrequired-group">
+							<label class="col-sm-offset-2 col-sm-5">Twofactor authentication required</label>
+						</div>
+					</div>
+					<div data-bind="if: loginPage.twofactorBoth()">
+						<div class="form-group" id="twofactorSelector-group">
+							<label for="twofactorSelector" class="col-sm-offset-2 col-sm-5">Select twofactor authentication method</label>
+							<div class="col-sm-offset-2 col-sm-5">
+								<label class="radio-inline">
+									<input type="radio" name="twofactorSelector" id="twofactorSelectorAuthenticator" value="authenticator" data-bind="checked: loginPage.twofactorSelector"> Google Authenticator
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="twofactorSelector" id="twofactorSelectorYubikey" value="yubikey" data-bind="checked: loginPage.twofactorSelector"> Yubikey
+								</label>
+							</div>
+						</div>
+					</div>
+					<div data-bind="if: loginPage.twoFactorType() === 'authenticator'">
+						<div class="form-group" id="authenticator-group" data-bind="css: { 'has-error': !loginPage.authenticatorOtpValidates() }">
+							<label for="authenticator" class="col-sm-2 control-label">Authenticator code</label>
+							<div class="col-sm-5">
+								<input type="text" class="form-control" id="authenticator" placeholder="Google Authenticator code" data-bind="value: loginPage.authenticatorOtp">
+							</div>
+						</div>
+					</div>
+					<div data-bind="if: loginPage.twoFactorType() === 'yubikey'">
+						<div class="form-group" id="yubikey-group" data-bind="css: { 'has-error': !loginPage.yubiOtpValidates() }">
+							<label for="yubikey" class="col-sm-2 control-label">Yubikey</label>
+							<div class="col-sm-5">
+								<input type="text" class="form-control" id="yubikey" placeholder="Yubikey code" data-bind="value: loginPage.yubiOtp">
+							</div>
+						</div>
+					</div>
+					<div data-bind="if: !loginPage.creatingUser()">
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-5">
+								<button type="submit" class="btn btn-primary" data-bind="click: function () { login(); }">Sign in</button>
+								<button type="button" class="btn btn-default" data-bind="text: loginPage.twofactorRequired() ? 'Cancel' : 'Create new user', click: function () { if (loginPage.twofactorRequired()) loginCancel(); else toggleCreateUser(); }">Cancel</button>
+							</div>
+						</div>
+					</div>
+					<div data-bind="if: loginPage.creatingUser()">
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-5">
+								<button type="submit" class="btn btn-primary" data-bind="click: function () { createNewUser(); }">Create</button>
+								<button type="button" class="btn btn-default" data-bind="click: function () { toggleCreateUser(); }">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- /Login/create functionality -->
+
+			<!-- Change password functionality -->
+			<div data-bind="if: pageFlow() === 'changepw'">
+				<div class="clear-header"></div>
+				<h4>Change password</h4>
+				<div class="clear-header"></div>
+
+				<form class="form-horizontal" role="form" onsubmit="return false;">
+					<div class="form-group" id="old-password-group" data-bind="css: { 'has-error': !changePwPage.oldPasswordValidates() }">
+						<label for="password" class="col-sm-2 control-label">Current password</label>
+						<div class="col-sm-5">
+							<input type="password" class="form-control" id="old-password" placeholder="Your current password" data-bind="value: changePwPage.oldPassword">
+						</div>
+					</div>
+					<div class="form-group" id="new-password-group" data-bind="css: { 'has-error': !changePwPage.newPasswordValidates() }">
+						<label for="new-password" class="col-sm-2 control-label">New password</label>
+						<div class="col-sm-5">
+							<input type="password" class="form-control" id="new-password" placeholder="New password" data-bind="value: changePwPage.newPassword">
+						</div>
+					</div>
+					<div>
+						<div class="form-group" id="new-password2-group" data-bind="css: { 'has-error': !changePwPage.newPassword2Validates() }">
+							<label for="new-password2" class="col-sm-2 control-label">Repeat new password</label>
+							<div class="col-sm-5">
+								<input type="password" class="form-control" id="new-password2" placeholder="Repeat new password" data-bind="value: changePwPage.newPassword2">
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-5">
+							<button type="submit" class="btn btn-primary" data-bind="click: function () { changePassword(); }">Change password</button>
+							<button type="button" class="btn btn-default" data-bind="click: function () { changePasswordCancel(); }">Cancel</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- /Change password functionality -->
+
+			<!-- UserInfo -->
+			<div data-bind="if: pageFlow() === 'userInfo'">
+				<div class="clear-header"></div>
+				<h4>User info</h4>
+				<div class="clear-header"></div>
+
+				<div data-bind="if: userInfo.successMsg()">
+					<div class="alert alert-success alert-dismissible" role="alert" data-bind="text: userInfo.successMsg()"></div>
+				</div>
+
+				<div>
+					<div class="col-sm-offset-2 col-sm-5">
+						<p>Username: <span data-bind="text: userInfo.userName()"></span></p>
+						<p>Displayname: <span data-bind="text: userInfo.displayName()"></span></p>
+						<p>
+							Google Authenticator attached: <span data-bind="text: userInfo.googleAuth()"></span>
+							<span data-bind="if: userInfo.googleAuth()">
+								<a data-bind="click: function () { requestDetachGoogle(); }">Detach</a>
+							</span>
+							<span data-bind="if: !userInfo.googleAuth()">
+								<a data-bind="click: function () { requestAttachGoogle(); }">Attach</a>
+							</span>
+						</p>
+						<p>
+							Yubikey attached: <span data-bind="text: userInfo.yubiAuth()"></span>
+							<span data-bind="if: userInfo.yubiAuth()">
+								<a data-bind="click: function () { requestDetachYubi(); }">Detach</a>
+							</span>
+							<span data-bind="if: !userInfo.yubiAuth()">
+								<a data-bind="click: function () { requestAttachYubi(); }">Attach</a>
+							</span>
+						</p>
+						<p>
+							<a data-bind="click: function () { requestChangePassword(); }">Change Password</a>
+						</p>
+					</div>
+				</div>
+			</div>
+			<!-- /UserInfo -->
+
+			<!-- Attach Google Authenticator -->
+			<div data-bind="if: pageFlow() === 'attachGoogle'">
+				<div class="clear-header"></div>
+				<h4><span data-bind="text: attachGooglePage.detach() ? 'Detach' : 'Attach'"></span> Google Authenticator</h4>
+
+				<div data-bind="if: !attachGooglePage.detach()">
+					<p>Please use your phones Google Authenticator app to scan this QR code</p>
+					<img data-bind="attr: { 'src': 'user/googleauth/qr/' + attachGooglePage.qrName() }">
+					<p><a data-bind="click: function () { toggleSecret(); }, text: attachGooglePage.showSecret() ? 'Hide the secret code' : 'I cant scan the code'"></a></p>
+					<div data-bind="if: attachGooglePage.showSecret()">
+						<p>
+							To setup the authenticator manually choose "<b>Time based</b>" and enter the following code into you authenticator as the key:<br>
+							<b><span data-bind="text: attachGooglePage.sharedSecret()"></span></b>
+						</p>
+					</div>
+				</div>
+
+				<form class="form-horizontal" role="form" onsubmit="return false;">
+					<div class="form-group">
+						<div data-bind="if: attachGooglePage.detach()">
+							<label class="col-sm-offset-2 col-sm-5" >To remove the authenticator enter a code for validation here:</label>
+						</div>
+						<div data-bind="if: !attachGooglePage.detach()">
+							<label class="col-sm-offset-2 col-sm-5" >Once the authenticator is setup enter a code for validation here:</label>
+						</div>
+					</div>
+					<div class="form-group" id="validateGoogleOtp-group" data-bind="css: { 'has-error': !attachGooglePage.googleOtpValidates() }">
+						<label for="validateGoogleOtp" class="col-sm-2 control-label">Authenticator code</label>
+						<div class="col-sm-5">
+							<input type="text" class="form-control" id="validateGoogleOtp" placeholder="Authenticator code" data-bind="value: attachGooglePage.googleOtp">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-5">
+							<button type="submit" class="btn btn-primary" data-bind="click: function () { validateGoogleOtp(); }">Validate</button>
+							<button type="button" class="btn btn-default" data-bind="click: function () { cancelAttachTwoFactor(); }">Cancel</button>
+						</div>
+					</div>
+				</form>
+
+				<div class="clear-header"></div>
+			</div>
+			<!-- /Attach Google Authenticator -->
+
+			<!-- Attach Yubikey -->
+			<div data-bind="if: pageFlow() === 'attachYubi'">
+				<div class="clear-header"></div>
+				<h4 data-bind="text: attachYubiPage.detach() ? 'Detach Yubikey' : 'Attach Yubikey'"></h4>
+				<div class="clear-header"></div>
+
+				<form class="form-horizontal" role="form" onsubmit="return false;">
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-5">
+							<label>To <span data-bind="text: attachYubiPage.detach() ? 'detach' : 'attach'"></span> your yubikey please activate it in the below field:</label>
+						</div>
+					</div>
+					<div class="form-group" id="validateYubiOtp-group" data-bind="css: { 'has-error': !attachYubiPage.yubiOtpValidates() }">
+						<label for="validateYubiOtp" class="col-sm-2 control-label">Yubikey</label>
+						<div class="col-sm-5">
+							<input type="text" class="form-control" id="validateYubiOtp" placeholder="Yubikey generated code" data-bind="value: attachYubiPage.yubiOtp">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-5">
+							<button type="submit" class="btn btn-primary" data-bind="click: function () { validateYubiOtp(); }, text: attachYubiPage.detach() ? 'Detach Yubikey' : 'Validate and attach Yubikey'"></button>
+							<button type="button" class="btn btn-default" data-bind="click: function () { cancelAttachTwoFactor(); }">Cancel</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- /Attach Yubikey -->
+
+
+			<!-- Viewmodel Debug info --><!--
+			<div class="clear-footer"></div>
+			<pre data-bind="text: ko.toJSON($data, null, 2)"></pre>
+			--><!-- /Viewmodel Debug info -->
+
+			<div class="clear-footer"></div>
+		</div>
+	</div>
+	<!-- /Page content -->
+
+	<!-- Footer -->
+	<div class="footer">
+		<div class="container container-narrow">
+			<p class="pull-left muted credits">Source code available at <a href="https://github.com/BlueWizardHat/2fa-demo">https://github.com/BlueWizardHat/2fa-demo</a></p>
+			<p class="pull-right muted">@BlueWizardHat</p>
+		</div>
+	</div>
+	<!-- /Footer -->
+</body>
+</html>
