@@ -8,6 +8,9 @@ allprojects {
 	tasks.eclipse.dependsOn(cleanEclipse)
 
 	repositories {
+		maven {
+			url "${artifactory_contextUrl}/libs-release"
+		}
 		mavenCentral()
 	}
 
