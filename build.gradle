@@ -28,8 +28,8 @@ subprojects {
 	compileJava.options.encoding = 'UTF-8'
 
 	dependencies {
-		compile 'org.projectlombok:lombok:1.14.4'
-		compile 'com.google.guava:guava:17.0'
+		compile 'org.projectlombok:lombok:1.16.4'
+		compile 'com.google.guava:guava:18.0'
 		compile 'org.slf4j:slf4j-api:1.7.7'
 
 		testCompile 'junit:junit:4.11'
@@ -66,17 +66,17 @@ project(':2fa-demo-webapp') {
 		compile project(':2fa-yubikey')
 
 		compile 'org.slf4j:slf4j-log4j12:1.7.7'
-		compile 'org.springframework:spring-context:4.0.6.RELEASE'
-		compile 'org.springframework:spring-webmvc:4.0.6.RELEASE'
-		compile 'org.springframework:spring-tx:4.0.6.RELEASE'
-		compile 'org.springframework:spring-orm:4.0.6.RELEASE'
+		compile 'org.springframework:spring-context:4.1.7.RELEASE'
+		compile 'org.springframework:spring-webmvc:4.1.7.RELEASE'
+		compile 'org.springframework:spring-tx:4.1.7.RELEASE'
+		compile 'org.springframework:spring-orm:4.1.7.RELEASE'
 		compile 'org.hibernate:hibernate-entitymanager:4.3.6.Final'
 		compile 'org.hibernate:hibernate-validator:5.1.2.Final'
 		compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
 		compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
 		compile 'org.mindrot:jbcrypt:0.3m'
 
-		providedCompile 'org.projectlombok:lombok:1.14.4'
+		providedCompile 'org.projectlombok:lombok:1.16.4'
 		providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
 	}
 }

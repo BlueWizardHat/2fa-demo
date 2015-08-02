@@ -23,7 +23,7 @@
 package net.bluewizardhat.yubiauth;
 
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
