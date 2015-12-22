@@ -1,4 +1,8 @@
 
+plugins {
+    id "io.spring.dependency-management" version "0.5.4.RELEASE"
+}
+
 allprojects {
 	apply plugin: 'eclipse'
 
@@ -21,20 +25,57 @@ allprojects {
 	}
 }
 
+
 subprojects {
 	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
 
 	sourceCompatibility = 1.7
 	compileJava.options.encoding = 'UTF-8'
 
-	dependencies {
-		compile 'org.projectlombok:lombok:1.16.4'
-		compile 'com.google.guava:guava:18.0'
-		compile 'org.slf4j:slf4j-api:1.7.7'
+	dependencyManagement {
+		dependencies {
+			dependencySet(group:'org.springframework', version:'4.1.7.RELEASE') {
+				entry 'spring-context'
+				entry 'spring-webmvc'
+				entry 'spring-tx'
+				entry 'spring-orm'
+			}
+			dependencySet(group:'org.codehaus.jackson', version:'1.9.13') {
+				entry 'jackson-core-asl'
+				entry 'jackson-mapper-asl'
+			}
+			dependencySet(group:'com.google.zxing', version:'3.1.0') {
+				entry 'javase'
+				entry 'core'
+			}
+			dependencySet(group:'org.slf4j', version:'1.7.7') {
+				entry 'slf4j-api'
+				entry 'slf4j-log4j12'
+				entry 'slf4j-simple'
+			}
 
-		testCompile 'junit:junit:4.11'
-		testCompile 'org.mockito:mockito-core:1.9.5'
-		testCompile 'org.slf4j:slf4j-simple:1.7.7'
+			dependency 'org.projectlombok:lombok:1.16.6'
+			dependency 'com.google.guava:guava:18.0'
+			dependency 'org.hibernate:hibernate-entitymanager:4.3.6.Final'
+			dependency 'org.hibernate:hibernate-validator:5.1.2.Final'
+			dependency 'org.mindrot:jbcrypt:0.3m'
+			dependency 'com.yubico:yubico-validation-client2:2.0.1'
+			dependency 'javax.servlet:javax.servlet-api:3.0.1'
+
+			dependency 'junit:junit:4.11'
+			dependency 'org.mockito:mockito-core:1.9.5'
+		}
+	}
+
+	dependencies {
+		compile 'org.projectlombok:lombok'
+		compile 'com.google.guava:guava'
+		compile 'org.slf4j:slf4j-api'
+
+		testCompile 'junit:junit'
+		testCompile 'org.mockito:mockito-core'
+		testCompile 'org.slf4j:slf4j-simple'
 	}
 }
 
@@ -46,14 +87,14 @@ project(':2fa-google-auth') {
 project(':2fa-google-qr') {
 	dependencies {
 		compile project(':2fa-google-auth')
-		compile 'com.google.zxing:javase:3.1.0'
-		compile 'com.google.zxing:core:3.1.0'
+		compile 'com.google.zxing:javase'
+		compile 'com.google.zxing:core'
 	}
 }
 
 project(':2fa-yubikey') {
 	dependencies {
-		compile 'com.yubico:yubico-validation-client2:2.0.1'
+		compile 'com.yubico:yubico-validation-client2'
 	}
 }
 
@@ -65,18 +106,18 @@ project(':2fa-demo-webapp') {
 		compile project(':2fa-google-qr')
 		compile project(':2fa-yubikey')
 
-		compile 'org.slf4j:slf4j-log4j12:1.7.7'
-		compile 'org.springframework:spring-context:4.1.7.RELEASE'
-		compile 'org.springframework:spring-webmvc:4.1.7.RELEASE'
-		compile 'org.springframework:spring-tx:4.1.7.RELEASE'
-		compile 'org.springframework:spring-orm:4.1.7.RELEASE'
-		compile 'org.hibernate:hibernate-entitymanager:4.3.6.Final'
-		compile 'org.hibernate:hibernate-validator:5.1.2.Final'
-		compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
-		compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-		compile 'org.mindrot:jbcrypt:0.3m'
+		compile 'org.slf4j:slf4j-log4j12'
+		compile 'org.springframework:spring-context'
+		compile 'org.springframework:spring-webmvc'
+		compile 'org.springframework:spring-tx'
+		compile 'org.springframework:spring-orm'
+		compile 'org.hibernate:hibernate-entitymanager'
+		compile 'org.hibernate:hibernate-validator'
+		compile 'org.codehaus.jackson:jackson-core-asl'
+		compile 'org.codehaus.jackson:jackson-mapper-asl'
+		compile 'org.mindrot:jbcrypt'
 
-		providedCompile 'org.projectlombok:lombok:1.16.4'
-		providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
+		providedCompile 'org.projectlombok:lombok'
+		providedCompile 'javax.servlet:javax.servlet-api'
 	}
 }

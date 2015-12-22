@@ -20,7 +20,7 @@ by me directly no support whatsoever will be provided.
 
 # Building
 
-The project builds using Gradle (v1.12+), so you will need to have Gradle installed
+The project builds using Gradle (v2.4+), so you will need to have Gradle installed
 to build.
 
 Also the project is configured to use PostgreSQL as the database, if you want
