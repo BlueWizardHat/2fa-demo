@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import net.bluewizardhat.yubiauth.Yubiauth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.yubico.client.v2.YubicoClient;
@@ -41,13 +42,19 @@ import com.yubico.client.v2.YubicoClient;
 public class YubiauthFactory {
 	private Yubiauth yubiAuth;
 
+	@Value("${yubico.clientId}")
+	private Integer clientId;
+
+	@Value("${yubico.apikey}")
+	private String apiKey;
+
 	@PostConstruct
 	public void initialize() {
-		YubicoClient yubicoClient = YubicoClient.getClient(1);
+		YubicoClient yubicoClient = YubicoClient.getClient(clientId, apiKey);
 		// could set up more stuff with the client here .. for example override the default validation servers or other stuff
 		yubiAuth = new Yubiauth(yubicoClient);
 
-		log.debug("YubicoClient initialized");
+		log.debug("YubicoClient initialized, clientId={}, apiKey={}", clientId, apiKey);
 	}
 
 	public Yubiauth getYubiauth() {

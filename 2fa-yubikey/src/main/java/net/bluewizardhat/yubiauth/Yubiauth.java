@@ -22,14 +22,14 @@
 
 package net.bluewizardhat.yubiauth;
 
+import com.yubico.client.v2.ResponseStatus;
+import com.yubico.client.v2.VerificationResponse;
+import com.yubico.client.v2.YubicoClient;
+import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
+
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-
-import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
-import com.yubico.client.v2.exceptions.YubicoValidationException;
-import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 /**
  * Wrapper around a {@link YubicoClient} for simplicity.
@@ -67,22 +67,15 @@ public class Yubiauth {
 		}
 
 		try {
-			YubicoResponse response = client.verify(otp);
-			if (response.getStatus() == YubicoResponseStatus.OK) {
+			VerificationResponse response = client.verify(otp);
+			if (response.getStatus() == ResponseStatus.OK) {
 				return YubiVerifyResponse.ok(response);
 			}
 			return YubiVerifyResponse.failed(response);
-		} catch (YubicoValidationException e) {
-			return YubiVerifyResponse.error(e);
 		} catch (YubicoValidationFailure e) {
 			return YubiVerifyResponse.error(e);
+		} catch (YubicoVerificationException e) {
+			return YubiVerifyResponse.error(e);
 		}
-	}
-
-	/**
-	 * Returns a YubiAith client with default settings.
-	 */
-	public static Yubiauth defaultInstance() {
-		return new Yubiauth(YubicoClient.getClient(1));
 	}
 }

@@ -22,12 +22,14 @@
 
 package net.bluewizardhat.yubiauth;
 
-import lombok.Value;
-import lombok.Builder;
+import javax.xml.bind.ValidationException;
 
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
+
+import lombok.Builder;
+import lombok.Value;
 
 /**
  * Response object
@@ -69,25 +71,29 @@ public class YubiVerifyResponse {
 	/**
 	 * Response status object from the YubicoClient if available
 	 */
-	private YubicoResponse yubicoResponse;
+	private VerificationResponse yubicoResponse;
 
 	/**
 	 * Cause of error
 	 */
 	private Exception errorCause;
 
-	static YubiVerifyResponse ok(YubicoResponse yubicoResponse) {
+	static YubiVerifyResponse ok(VerificationResponse yubicoResponse) {
 		return builder().verifyStatus(VerifyStatus.OK).yubicoResponse(yubicoResponse).build();
 	}
 
-	static YubiVerifyResponse failed(YubicoResponse status) {
+	static YubiVerifyResponse failed(VerificationResponse status) {
 		return builder().verifyStatus(VerifyStatus.FAILED).yubicoResponse(status).build();
 	}
 
-	static YubiVerifyResponse error(YubicoValidationException errorCause) {
+	static YubiVerifyResponse error(ValidationException errorCause) {
 		return builder().verifyStatus(VerifyStatus.ERROR).errorCause(errorCause).build();
 	}
 
+	static YubiVerifyResponse error(YubicoVerificationException errorCause) {
+		return builder().verifyStatus(VerifyStatus.ERROR).errorCause(errorCause).build();
+	}
+	
 	static YubiVerifyResponse error(YubicoValidationFailure errorCause) {
 		return builder().verifyStatus(VerifyStatus.VALIDATION_ERROR).errorCause(errorCause).build();
 	}

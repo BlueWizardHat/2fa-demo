@@ -26,19 +26,11 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
-import net.bluewizardhat.googleauth.GoogleAuth;
-import net.bluewizardhat.tfa.web.data.dao.UserJpaDao;
-import net.bluewizardhat.tfa.web.data.entities.User;
-import net.bluewizardhat.tfa.web.util.SessionData;
-import net.bluewizardhat.tfa.web.util.YubiauthFactory;
-import net.bluewizardhat.yubiauth.Yubiauth;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +39,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableMap;
+
+import lombok.extern.slf4j.Slf4j;
+import net.bluewizardhat.googleauth.GoogleAuth;
+import net.bluewizardhat.tfa.web.data.dao.UserJpaDao;
+import net.bluewizardhat.tfa.web.data.entities.User;
+import net.bluewizardhat.tfa.web.util.SessionData;
+import net.bluewizardhat.tfa.web.util.YubiauthFactory;
+import net.bluewizardhat.yubiauth.Yubiauth;
 
 /**
  * User controller for creating users and logging in

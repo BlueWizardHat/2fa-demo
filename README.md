@@ -61,6 +61,17 @@ Deploying in a standard tomcat is as simple as copying the war file to the webap
 Then just point you browser to the url that you deployed it on and check out the magic.
 
 
+# Yubico validation
+
+To be able to verify yubico keys you will need to register for an api key at https://upgrade.yubico.com/getapikey/.
+Put the client id and api key you get from this in
+
+	2fa-demo-webapp/src/main/resources/application.properties
+
+If you do not do this any attempts at using the yubico features will result in server errors. Google Authenticator features will work
+without the yubico client id and api key.
+
+
 # Importing into an IDE
 
 If you want to import the project into an IDE make sure you have installed the excellent

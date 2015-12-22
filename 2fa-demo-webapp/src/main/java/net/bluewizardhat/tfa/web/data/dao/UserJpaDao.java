@@ -22,17 +22,17 @@
 
 package net.bluewizardhat.tfa.web.data.dao;
 
-import static javax.transaction.Transactional.TxType.MANDATORY;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-
-import net.bluewizardhat.tfa.web.data.entities.User;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import net.bluewizardhat.tfa.web.data.entities.User;
 
 /**
  * Database access for the {@link User} entity
@@ -44,17 +44,17 @@ public class UserJpaDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Transactional(MANDATORY)
+	@Transactional(propagation = MANDATORY)
 	public void persist(User user) {
 		entityManager.persist(user);
 	}
 
-	@Transactional(MANDATORY)
+	@Transactional(propagation = MANDATORY)
 	public User update(User user) {
 		return entityManager.merge(user);
 	}
 
-	@Transactional(MANDATORY)
+	@Transactional(propagation = MANDATORY)
 	public void remove(User user) {
 		entityManager.remove(user);
 	}
