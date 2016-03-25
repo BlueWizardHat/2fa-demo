@@ -30,42 +30,28 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: 'io.spring.dependency-management'
 
-	sourceCompatibility = 1.7
+	sourceCompatibility = 1.8
 	compileJava.options.encoding = 'UTF-8'
 
 	dependencyManagement {
+		imports {
+			mavenBom 'io.spring.platform:platform-bom:2.0.3.RELEASE'
+		}
+
 		dependencies {
-			dependencySet(group:'org.springframework', version:'4.2.4.RELEASE') {
-				entry 'spring-context'
-				entry 'spring-webmvc'
-				entry 'spring-tx'
-				entry 'spring-orm'
-			}
-			dependencySet(group:'com.fasterxml.jackson.core', version:'2.6.4') {
-				entry 'jackson-core'
-				entry 'jackson-databind'
-			}
+			// Override the BOM with some newer versions
+			dependency 'org.projectlombok:lombok:1.16.8'
+			dependency 'com.google.guava:guava:19.0'
+			dependency 'org.hibernate:hibernate-entitymanager:5.0.6.Final'
+
+			// Stuff not in the BOM
 			dependencySet(group:'com.google.zxing', version:'3.2.1') {
 				entry 'javase'
 				entry 'core'
 			}
-			dependencySet(group:'org.slf4j', version:'1.7.13') {
-				entry 'slf4j-api'
-				entry 'slf4j-log4j12'
-				entry 'slf4j-simple'
-			}
-
-			dependency 'org.projectlombok:lombok:1.16.6'
-			dependency 'com.google.guava:guava:19.0'
-			dependency 'org.hibernate:hibernate-entitymanager:5.0.6.Final'
-			dependency 'org.hibernate:hibernate-validator:5.2.2.Final'
 			dependency 'org.mindrot:jbcrypt:0.3m'
 			dependency 'com.yubico:yubico-validation-client2:3.0.1'
-			dependency 'javax.servlet:javax.servlet-api:3.0.1'
 			dependency 'javax.transaction:jta:1.1'
-
-			dependency 'junit:junit:4.12'
-			dependency 'org.mockito:mockito-core:1.10.19'
 		}
 	}
 
