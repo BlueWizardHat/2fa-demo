@@ -1,10 +1,22 @@
 
+// Spring-boot plugin is not avaailable in the newer "plugins" way
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
+    }
+}
+
+// Spring-dependency-management however *is* available in this way
 plugins {
-    id "io.spring.dependency-management" version "0.5.4.RELEASE"
+    id "io.spring.dependency-management" version "0.5.6.RELEASE"
 }
 
 allprojects {
 	apply plugin: 'eclipse'
+	apply plugin: 'idea'
 
 	// Project version
 	version = '1.0.0'
@@ -31,11 +43,13 @@ subprojects {
 	apply plugin: 'io.spring.dependency-management'
 
 	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 	compileJava.options.encoding = 'UTF-8'
 
 	dependencyManagement {
 		imports {
 			mavenBom 'io.spring.platform:platform-bom:2.0.3.RELEASE'
+			mavenBom 'org.springframework.boot:spring-boot-starter-web:1.3.3.RELEASE'
 		}
 
 		dependencies {
@@ -87,13 +101,15 @@ project(':2fa-yubikey') {
 
 project(':2fa-demo-webapp') {
 	apply plugin: 'war'
+	apply plugin: 'spring-boot'
 
 	dependencies {
 		compile project(':2fa-google-auth')
 		compile project(':2fa-google-qr')
 		compile project(':2fa-yubikey')
 
-		compile 'org.slf4j:slf4j-log4j12'
+		//compile 'org.slf4j:slf4j-log4j12'
+		compile 'org.springframework.boot:spring-boot-starter-web'
 		compile 'org.springframework:spring-context'
 		compile 'org.springframework:spring-webmvc'
 		compile 'org.springframework:spring-tx'

@@ -3,6 +3,11 @@
 .settings/
 .project
 
+# Ignore idea/intellij files
+*.iml
+*.ipr
+*.iws
+
 # Ignore gradle files
 build/
 .gradle/
